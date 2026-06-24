@@ -27,3 +27,35 @@
 * **Security (ความปลอดภัย):** รหัสผ่านของผู้ใช้งานทุกคนต้องผ่านการเข้ารหัส (Encryption) ก่อนบันทึกลงฐานข้อมูล และใช้โปรโตคอล HTTPS เพื่อความปลอดภัยในการส่งข้อมูล
 * **Performance (ประสิทธิภาพ):** หน้าเว็บต้องมีความเร็วในการแสดงผล (Page Load Time) 
 * **Availability (ความพร้อมใช้งาน):** ระบบต้องมีความเสถียร สามารถใช้งานได้ต่อเนื่อง 24 ชั่วโมง โดยมีอัตราความผิดพลาดต่ำ
+
+## 4. สถาปัตยกรรมของระบบ (System Architecture)
+ระบบนี้ใช้สถาปัตยกรรมแบบ 3-Tier Architecture ที่มีการแยกส่วนการทำงานอย่างชัดเจนเพื่อความง่ายในการขยายตัวและบำรุงรักษา
+
+```mermaid
+graph TD
+    %% Users
+    Customer[ลูกค้า / ลูกค้าแฟนคลับ]
+    Admin[ผู้ดูแลระบบ / ร้านค้า]
+
+    %% Frontend
+    subgraph Frontend_Tier [Frontend UI]
+        WebPage[หน้าเว็บร้านค้า Web Application]
+    end
+
+    %% Backend
+    subgraph Backend_Tier [Backend API]
+        APIServer[เซิร์ฟเวอร์ระบบ / Express.js Service]
+    end
+
+    %% Database & External Services
+    subgraph Data_and_External_Tier [Database & Services]
+        DB[(ฐานข้อมูลคลังสินค้า / MongoDB)]
+        Payment[ระบบชำระเงิน / Payment Gateway]
+    end
+
+    %% Connections
+    Customer -->|สั่งซื้อ/ชมสินค้า| WebPage
+    Admin -->|จัดการสต็อก/ดูออเดอร์| WebPage
+    WebPage -->|ส่งคำขอ HTTP Request| APIServer
+    APIServer -->|บันทึกออเดอร์/ตัดสต็อก| DB
+    APIServer -->|ตรวจสอบยอดเงิน| Payment
